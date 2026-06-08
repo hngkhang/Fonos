@@ -112,6 +112,8 @@ public class BookDetailActivity extends AppCompatActivity {
     private void setupNavigation() {
         findViewById(R.id.button_book_detail_back).setOnClickListener(v -> finish());
         findViewById(R.id.button_play_audiobook).setOnClickListener(v -> openPlayer());
+        TextView downloadButton = findViewById(R.id.button_download_audiobook);
+        downloadButton.setOnClickListener(v -> downloadButton.setText("Downloaded"));
         findViewById(R.id.button_add_review).setOnClickListener(v -> {
             Intent intent = createBookIntent(AddReviewActivity.class);
             startActivity(intent);

@@ -119,8 +119,21 @@
             android:backgroundTint="@null"
             android:text="Update profile"
             android:textAllCaps="false"
-            android:textColor="@color/primary_variant"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_logout"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_button_outline_dark"
+            android:backgroundTint="@null"
+            android:text="Log out"
+            android:textAllCaps="false"
+            android:textColor="@color/accent"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
