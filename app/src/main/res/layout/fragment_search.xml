@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/text_search_header"
+            style="@style/FonosHeadingLarge"
+            android:text="Search books" />
+
+        <LinearLayout
+            android:id="@+id/layout_search_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_search"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="14dp"
+                android:contentDescription="Search"
+                android:src="@drawable/ic_search"
+                android:tint="@color/text_muted" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Title, author, narrator..."
+                android:textColor="@color/text_muted"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/text_search_clear"
+                android:layout_width="38dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="x"
+                android:textColor="@color/text_muted"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_popular_searches"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Popular searches" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/layout_popular_search_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/chip_search_focus"
+                    style="@style/FonosChipSelected"
+                    android:text="Focus" />
+
+                <TextView
+                    android:id="@+id/chip_search_money"
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Money" />
+
+                <TextView
+                    android:id="@+id/chip_search_sleep"
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Sleep" />
+
+                <TextView
+                    android:id="@+id/chip_search_fiction"
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Fiction" />
+
+                <TextView
+                    android:id="@+id/chip_search_habits"
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Habits" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/text_recent_searches"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Recent searches" />
+
+        <LinearLayout
+            android:id="@+id/layout_recent_searches"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_recent_atomic_habits"
+                style="@style/FonosProfileField"
+                android:text="Atomic Habits" />
+
+            <TextView
+                android:id="@+id/text_recent_business"
+                style="@style/FonosProfileField"
+                android:layout_marginTop="10dp"
+                android:text="Business audiobooks" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_suggested_audiobooks"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Suggested audiobooks" />
+
+        <LinearLayout
+            android:id="@+id/layout_search_books"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/card_search_deep_work"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_blue" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="Deep Work" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Cal Newport" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="7h 35m  |  4.7" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/card_search_ikigai"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_orange" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="Ikigai" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Hector Garcia" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="3h 58m  |  4.7" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_top_narrators"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Top authors &amp; narrators" />
+
+        <LinearLayout
+            android:id="@+id/layout_top_narrators"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/chip_search_james_clear"
+                style="@style/FonosChipText"
+                android:text="James Clear" />
+
+            <TextView
+                android:id="@+id/chip_search_morgan_housel"
+                style="@style/FonosChipText"
+                android:layout_marginStart="10dp"
+                android:text="Morgan Housel" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/text_category_header"
+            style="@style/FonosHeadingLarge"
+            android:text="Browse categories" />
+
+        <TextView
+            android:id="@+id/text_category_subtitle"
+            style="@style/FonosBodyMuted"
+            android:layout_marginTop="6dp"
+            android:text="Discover audiobooks by mood, topic, and listening goal." />
+
+        <LinearLayout
+            android:id="@+id/layout_category_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_search"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="14dp"
+                android:contentDescription="Search"
+                android:src="@drawable/ic_search"
+                android:tint="@color/text_muted" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Search categories"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/layout_category_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/FonosChipSelected"
+                    android:text="Business" />
+
+                <TextView
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Fiction" />
+
+                <TextView
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Psychology" />
+
+                <TextView
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Self-help" />
+
+                <TextView
+                    style="@style/FonosChipText"
+                    android:layout_marginStart="10dp"
+                    android:text="Wellness" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/text_business_section"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Popular in business" />
+
+        <LinearLayout
+            android:id="@+id/layout_business_books"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/card_category_money"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_blue" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="The Psychology of Money" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Morgan Housel" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="8h 10m  |  4.8" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/card_category_start_why"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_orange" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="Start With Why" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Simon Sinek" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="7h 18m  |  4.8" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_fiction_section"
+            style="@style/FonosHeadingMedium"
+            android:layout_marginTop="28dp"
+            android:text="Popular in fiction" />
+
+        <LinearLayout
+            android:id="@+id/layout_fiction_books"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/card_category_alchemist"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_purple" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="The Alchemist" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Paulo Coelho" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="4h 15m  |  4.8" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/card_category_home"
+                style="@style/FonosBookRowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
+
+                <View
+                    style="@style/FonosSmallBookCover"
+                    android:background="@drawable/bg_cover_green" />
+
+                <LinearLayout style="@style/FonosBookRowTextGroup">
+                    <TextView
+                        style="@style/FonosBookRowTitle"
+                        android:text="You'd Be Home" />
+                    <TextView
+                        style="@style/FonosBookRowSubtitle"
+                        android:text="Alex Michaelides" />
+                    <TextView
+                        style="@style/FonosBookRowPrice"
+                        android:text="6h 30m  |  4.4" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

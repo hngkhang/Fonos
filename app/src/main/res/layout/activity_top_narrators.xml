@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingTop="22dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/button_top_narrators_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_icon_circle"
+            android:contentDescription="Back"
+            android:padding="11dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="44dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Top Narrators"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/FonosChipSelected"
+                android:text="All" />
+
+            <TextView
+                style="@style/FonosChipText"
+                android:layout_marginStart="10dp"
+                android:text="Fiction" />
+
+            <TextView
+                style="@style/FonosChipText"
+                android:layout_marginStart="10dp"
+                android:text="Business" />
+
+            <TextView
+                style="@style/FonosChipText"
+                android:layout_marginStart="10dp"
+                android:text="Self-help" />
+
+            <TextView
+                style="@style/FonosChipText"
+                android:layout_marginStart="10dp"
+                android:text="Psychology" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_top_narrators"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:overScrollMode="never" />
+</LinearLayout>

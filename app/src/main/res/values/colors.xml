@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1E2A38</color>
+    <color name="primary_variant">#16202B</color>
+    <color name="secondary">#4DA8DA</color>
+    <color name="accent">#7CE0FF</color>
+    <color name="background">#0F1720</color>
+    <color name="surface">#182331</color>
+    <color name="surface_light">#223244</color>
+    <color name="card_gradient_start">#213248</color>
+    <color name="card_gradient_end">#2B4763</color>
+    <color name="text_primary">#F5F7FA</color>
+    <color name="text_secondary">#A9B4C0</color>
+    <color name="text_muted">#7B8794</color>
+    <color name="chip_bg">#223244</color>
+    <color name="chip_selected_bg">#4DA8DA</color>
+    <color name="chip_selected_text">#FFFFFF</color>
+    <color name="input_bg">#1A2430</color>
+    <color name="divider">#2A394A</color>
+    <color name="success_optional">#3DD598</color>
+    <color name="warning_optional">#FFB84D</color>
+    <color name="ripple_accent">#337CE0FF</color>
+    <color name="ripple_surface">#26334455</color>
+    <color name="cover_purple_start">#6B5DD3</color>
+    <color name="cover_purple_end">#303F7D</color>
+    <color name="cover_blue_start">#4DA8DA</color>
+    <color name="cover_blue_end">#174C78</color>
+    <color name="cover_green_start">#3DD598</color>
+    <color name="cover_green_end">#1B5D60</color>
+    <color name="cover_orange_start">#FFB84D</color>
+    <color name="cover_orange_end">#7A4D1A</color>
+
+    <color name="fonos_main">@color/secondary</color>
+    <color name="fonos_secondary">@color/accent</color>
+    <color name="fonos_highlight">@color/surface_light</color>
+    <color name="black">@color/text_primary</color>
+    <color name="white">#FFFFFF</color>
+    <color name="search_grey">@color/input_bg</color>
+    <color name="font_grey">@color/text_secondary</color>
+    <color name="navbar_grey">@color/text_muted</color>
+    <color name="placeholder_grey">@color/surface_light</color>
+    <color name="background_white">@color/background</color>
+    <color name="card_border">@color/divider</color>
+</resources>
