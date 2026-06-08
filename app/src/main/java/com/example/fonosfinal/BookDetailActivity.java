@@ -27,7 +27,7 @@ public class BookDetailActivity extends AppCompatActivity {
     public static final String EXTRA_RATING = "extra_rating";
     public static final String EXTRA_CATEGORY = "extra_category";
     public static final String EXTRA_COVER_TYPE = "extra_cover_type";
-
+    public static final String EXTRA_BOOK_ID = "extra_book_id";
     private String title;
     private String author;
     private String narrator;
@@ -35,6 +35,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private String rating;
     private String category;
     private int coverType;
+    private String bookId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class BookDetailActivity extends AppCompatActivity {
         rating = intent.getStringExtra(EXTRA_RATING);
         category = intent.getStringExtra(EXTRA_CATEGORY);
         coverType = intent.getIntExtra(EXTRA_COVER_TYPE, 1);
+        bookId = intent.getStringExtra(EXTRA_BOOK_ID);
 
         if (title == null) {
             title = "Atomic Habits";
@@ -112,6 +114,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private void setupNavigation() {
         findViewById(R.id.button_book_detail_back).setOnClickListener(v -> finish());
         findViewById(R.id.button_play_audiobook).setOnClickListener(v -> openPlayer());
+
         findViewById(R.id.button_add_review).setOnClickListener(v -> {
             Intent intent = createBookIntent(AddReviewActivity.class);
             startActivity(intent);
@@ -132,6 +135,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_RATING, rating);
         intent.putExtra(EXTRA_CATEGORY, category);
         intent.putExtra(EXTRA_COVER_TYPE, coverType);
+        intent.putExtra(EXTRA_BOOK_ID, bookId);
         return intent;
     }
 
@@ -144,6 +148,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_RATING, book.getRating());
         intent.putExtra(EXTRA_CATEGORY, book.getCategory());
         intent.putExtra(EXTRA_COVER_TYPE, book.getCoverType());
+        intent.putExtra(EXTRA_BOOK_ID, book.getRemoteId());
         return intent;
     }
 

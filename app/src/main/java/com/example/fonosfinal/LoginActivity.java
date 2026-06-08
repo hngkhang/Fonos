@@ -11,6 +11,10 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,11 +29,36 @@ public class LoginActivity extends AppCompatActivity {
         Button loginButton = findViewById(R.id.button_login);
         TextView signUpTextView = findViewById(R.id.text_sign_up);
         TextView forgotPasswordTextView = findViewById(R.id.text_forgot_password);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
 
+        EditText emailEditText = findViewById(R.id.edit_text_login_email);
+        EditText passwordEditText = findViewById(R.id.edit_text_login_password);
         loginButton.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+
+            if (email.isEmpty()) {
+                emailEditText.setError("Email is required");
+                return;
+            }
+
+            if (password.isEmpty()) {
+                passwordEditText.setError("Password is required");
+                return;
+            }
+
+            loginButton.setEnabled(false);
+
+            auth.signInWithEmailAndPassword(email, password)
+                    .addOnSuccessListener(authResult -> {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        loginButton.setEnabled(true);
+                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         });
 
         setupAuthLink(

@@ -12,6 +12,7 @@ import com.example.fonosfinal.R;
 import com.example.fonosfinal.models.Book;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
@@ -27,7 +28,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     public BookAdapter(List<Book> books, OnBookClickListener listener) {
-        this.books = books;
+        this.books = books == null ? new ArrayList<>() : books;
         this.listener = listener;
     }
 
@@ -84,5 +85,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             return R.drawable.bg_cover_purple;
         }
         return R.drawable.bg_book_placeholder;
+    }
+    public void updateBooks(List<Book> newBooks) {
+        books.clear();
+        if (newBooks != null) {
+            books.addAll(newBooks);
+        }
+        notifyDataSetChanged();
     }
 }

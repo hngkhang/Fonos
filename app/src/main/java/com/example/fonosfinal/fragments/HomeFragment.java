@@ -23,9 +23,16 @@ import com.example.fonosfinal.models.Book;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.Toast;
+
+import com.example.fonosfinal.data.repository.BookRepository;
 
 public class HomeFragment extends Fragment {
 
+    private BookAdapter trendingAdapter;
+    private BookAdapter recommendedAdapter;
+    private BookAdapter newReleaseAdapter;
+    private BookRepository bookRepository;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -36,18 +43,53 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupBookList(view.findViewById(R.id.recycler_trending_books), createTrendingBooks());
-        setupBookList(view.findViewById(R.id.recycler_recommended_books), createRecommendedBooks());
-        setupBookList(view.findViewById(R.id.recycler_new_release_books), createNewReleaseBooks());
+        bookRepository = new BookRepository(requireContext());
+
+        trendingAdapter = setupBookList(view.findViewById(R.id.recycler_trending_books));
+        recommendedAdapter = setupBookList(view.findViewById(R.id.recycler_recommended_books));
+        newReleaseAdapter = setupBookList(view.findViewById(R.id.recycler_new_release_books));
+
         setupHeaderNavigation(view);
         setupNarratorNavigation(view);
+
+        loadHomeBooks();
     }
 
-    private void setupBookList(RecyclerView recyclerView, List<Book> books) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new BookAdapter(books, this::openBookDetail));
+    private BookAdapter setupBookList(RecyclerView recyclerView) {
+        BookAdapter adapter = new BookAdapter(new ArrayList<>(), this::openBookDetail);
+
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        );
+        recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
+
+        return adapter;
+    }
+    private void loadHomeBooks() {
+        bookRepository.loadHomeBooks(new BookRepository.HomeBooksCallback() {
+            @Override
+            public void onLocalLoaded(List<Book> trending, List<Book> recommended, List<Book> newReleases) {
+                trendingAdapter.updateBooks(trending);
+                recommendedAdapter.updateBooks(recommended);
+                newReleaseAdapter.updateBooks(newReleases);
+            }
+
+            @Override
+            public void onRemoteSynced(List<Book> trending, List<Book> recommended, List<Book> newReleases) {
+                trendingAdapter.updateBooks(trending);
+                recommendedAdapter.updateBooks(recommended);
+                newReleaseAdapter.updateBooks(newReleases);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Cannot sync books. Showing offline data.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setupHeaderNavigation(View view) {
