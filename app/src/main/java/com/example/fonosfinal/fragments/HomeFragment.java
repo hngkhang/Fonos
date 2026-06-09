@@ -102,8 +102,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupNarratorNavigation(View view) {
-        view.findViewById(R.id.text_home_narrators_see_all).setOnClickListener(v ->
-                startActivity(new Intent(requireContext(), TopNarratorsActivity.class)));
         view.findViewById(R.id.card_home_narrator_john).setOnClickListener(v -> openNarratorProfile("John Smith", "24 audiobooks", "★ 4.9"));
         view.findViewById(R.id.card_home_narrator_alan).setOnClickListener(v -> openNarratorProfile("Alan Reed", "18 audiobooks", "★ 4.8"));
     }

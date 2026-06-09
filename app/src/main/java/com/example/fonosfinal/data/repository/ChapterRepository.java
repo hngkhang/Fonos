@@ -31,7 +31,7 @@ public class ChapterRepository {
                 .addOnSuccessListener(snapshot -> {
                     List<Chapter> chapters = new ArrayList<>();
                     for (QueryDocumentSnapshot document : snapshot) {
-                        Chapter chapter = mapChapter(document.getData());
+                        Chapter chapter = mapChapter(document.getId(), bookId, document.getData());
                         if (chapter != null) {
                             chapters.add(chapter);
                         }
@@ -42,24 +42,28 @@ public class ChapterRepository {
                 .addOnFailureListener(callback::onError);
     }
 
-    private Chapter mapChapter(Map<String, Object> data) {
+    private Chapter mapChapter(String documentId, String bookId, Map<String, Object> data) {
         Boolean isActive = getBoolean(data.get("isActive"));
         if (Boolean.FALSE.equals(isActive)) {
             return null;
         }
 
         int chapterIndex = getInt(data.get("chapterIndex"), 0);
+        String chapterId = getString(data.get("chapterId"));
         String title = getString(data.get("title"));
         long durationMs = getLong(data.get("durationMs"), 0L);
         boolean isSample = Boolean.TRUE.equals(getBoolean(data.get("isSample")));
 
         return new Chapter(
+                bookId,
+                chapterId == null || chapterId.trim().isEmpty() ? documentId : chapterId.trim(),
                 String.format(Locale.US, "%02d", chapterIndex),
                 title == null || title.trim().isEmpty() ? "Untitled chapter" : title.trim(),
                 formatDuration(durationMs),
-                isSample ? "free" : "locked",
+                isSample ? "free" : "available",
                 chapterIndex,
-                extractAudioUrl(data.get("audioUrl"))
+                extractAudioUrl(data.get("audioUrl")),
+                null
         );
     }
 

@@ -22,8 +22,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.fonosfinal.data.local.DownloadLocalDao;
 import com.example.fonosfinal.models.Chapter;
 import com.example.fonosfinal.services.AudioPlaybackService;
+import com.example.fonosfinal.models.Book;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -35,6 +39,8 @@ public class PlayerActivity extends AppCompatActivity
     public static final String EXTRA_CHAPTER_INDEX = "extra_chapter_index";
     public static final String EXTRA_CHAPTER_DURATION = "extra_chapter_duration";
     public static final String EXTRA_AUDIO_URL = "extra_audio_url";
+    public static final String EXTRA_LOCAL_PATH = "extra_local_path";
+    public static final String EXTRA_START_POSITION = "extra_start_position";
     public static final String EXTRA_FROM_NOTIFICATION = "extra_from_notification";
     public static final String EXTRA_CHAPTERS = "extra_chapters";
     private static final int REQUEST_NOTIFICATIONS = 100;
@@ -51,7 +57,9 @@ public class PlayerActivity extends AppCompatActivity
     private String chapterTitle;
     private String chapterDuration;
     private String audioUrl;
+    private String localPath;
     private int chapterIndex;
+    private int startPositionMs;
     private int coverType;
     private boolean shouldStartPlayback;
     private final ArrayList<Chapter> chapters = new ArrayList<>();
@@ -154,6 +162,7 @@ public class PlayerActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         progressHandler.removeCallbacks(progressUpdater);
+        saveListeningProgress();
         if (serviceBound) {
             playbackService.setPlaybackListener(null);
             unbindService(serviceConnection);
@@ -179,6 +188,12 @@ public class PlayerActivity extends AppCompatActivity
         chapterTitle = intent.getStringExtra(EXTRA_CHAPTER_TITLE);
         chapterDuration = intent.getStringExtra(EXTRA_CHAPTER_DURATION);
         audioUrl = intent.getStringExtra(EXTRA_AUDIO_URL);
+        localPath = intent.getStringExtra(EXTRA_LOCAL_PATH);
+        startPositionMs = intent.getIntExtra(EXTRA_START_POSITION, 0);
+        if ((audioUrl == null || audioUrl.trim().isEmpty())
+                && localPath != null && !localPath.trim().isEmpty()) {
+            audioUrl = localPath;
+        }
         chapterIndex = intent.getIntExtra(EXTRA_CHAPTER_INDEX, 0);
         Object serializedChapters = intent.getSerializableExtra(EXTRA_CHAPTERS);
         chapters.clear();
@@ -417,11 +432,13 @@ public class PlayerActivity extends AppCompatActivity
     private void applyChapter(Chapter chapter) {
         chapterTitle = chapter.getTitle();
         chapterDuration = chapter.getDuration();
-        audioUrl = chapter.getAudioUrl();
+        audioUrl = chapter.getPlaybackUrl();
+        localPath = chapter.getLocalPath();
         chapterIndex = chapter.getChapterIndex();
         getIntent().putExtra(EXTRA_CHAPTER_TITLE, chapterTitle);
         getIntent().putExtra(EXTRA_CHAPTER_DURATION, chapterDuration);
         getIntent().putExtra(EXTRA_AUDIO_URL, audioUrl);
+        getIntent().putExtra(EXTRA_LOCAL_PATH, localPath);
         getIntent().putExtra(EXTRA_CHAPTER_INDEX, chapterIndex);
         bindContent();
         playbackSeekBar.setProgress(0);
@@ -477,6 +494,36 @@ public class PlayerActivity extends AppCompatActivity
         playPauseButton.setEnabled(true);
         updatePlaybackButton(false);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveListeningProgress() {
+        if (!serviceBound || playbackService == null) return;
+
+        Chapter currentChapter = playbackService.getCurrentChapter();
+        int currentPosition = playbackService.getCurrentPosition();
+        int totalDuration = playbackService.getDuration();
+        if (currentChapter == null || currentPosition <= 0) return;
+
+        new DownloadLocalDao(this).saveListeningProgress(
+                getUserId(),
+                createCurrentBook(),
+                currentChapter,
+                currentPosition,
+                totalDuration
+        );
+    }
+
+    private Book createCurrentBook() {
+        Book book = new Book(title, author, duration, rating, coverType, category, narrator);
+        book.setRemoteId(bookId);
+        book.setCoverUrl(coverUrl);
+        book.setDescription(description);
+        return book;
+    }
+
+    private String getUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user == null ? "guest" : user.getUid();
     }
 
     private int getCoverDrawable(int type) {

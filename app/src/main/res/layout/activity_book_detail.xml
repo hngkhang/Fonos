@@ -170,19 +170,6 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/button_save_library"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_button_outline_dark"
-            android:backgroundTint="@null"
-            android:text="Save to Library"
-            android:textAllCaps="false"
-            android:textColor="@color/accent"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <Button
             android:id="@+id/button_download_audiobook"
             android:layout_width="match_parent"
             android:layout_height="52dp"

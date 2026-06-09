@@ -64,6 +64,7 @@ public class AudioPlaybackService extends Service {
     private Bundle playerExtras = new Bundle();
     private final ArrayList<Chapter> chapters = new ArrayList<>();
     private int currentChapterPosition = -1;
+    private int pendingStartPositionMs;
 
     @Override
     public void onCreate() {
@@ -82,6 +83,7 @@ public class AudioPlaybackService extends Service {
             if (extras != null) {
                 playerExtras = new Bundle(extras);
             }
+            pendingStartPositionMs = intent.getIntExtra(PlayerActivity.EXTRA_START_POSITION, 0);
             readPlaylist(intent);
             promoteToForeground();
             if (currentChapterPosition >= 0) {
@@ -162,6 +164,11 @@ public class AudioPlaybackService extends Service {
                 .build());
         mediaPlayer.setOnPreparedListener(player -> {
             preparing = false;
+            if (pendingStartPositionMs > 0) {
+                int safePosition = Math.min(pendingStartPositionMs, player.getDuration());
+                player.seekTo(Math.max(safePosition, 0));
+                pendingStartPositionMs = 0;
+            }
             player.start();
             if (playbackListener != null) {
                 playbackListener.onReady();
@@ -227,7 +234,8 @@ public class AudioPlaybackService extends Service {
         if (position < 0 || position >= chapters.size()) return;
 
         Chapter chapter = chapters.get(position);
-        if (chapter.getAudioUrl() == null || chapter.getAudioUrl().trim().isEmpty()) {
+        String playbackUrl = chapter.getPlaybackUrl();
+        if (playbackUrl == null || playbackUrl.trim().isEmpty()) {
             notifyError("Selected chapter does not have an audio URL.");
             return;
         }
@@ -235,7 +243,7 @@ public class AudioPlaybackService extends Service {
         currentChapterPosition = position;
         updateCurrentChapterExtras(chapter);
         notifyChapterChanged(chapter, position);
-        play(chapter.getAudioUrl());
+        play(playbackUrl);
     }
 
     public ArrayList<Chapter> getChapters() {
@@ -477,7 +485,7 @@ public class AudioPlaybackService extends Service {
         for (int position = startPosition;
              position >= 0 && position < chapters.size();
              position += direction) {
-            String url = chapters.get(position).getAudioUrl();
+            String url = chapters.get(position).getPlaybackUrl();
             if (url != null && !url.trim().isEmpty()) {
                 return position;
             }
@@ -489,7 +497,8 @@ public class AudioPlaybackService extends Service {
         playerExtras.putString(PlayerActivity.EXTRA_CHAPTER_TITLE, chapter.getTitle());
         playerExtras.putInt(PlayerActivity.EXTRA_CHAPTER_INDEX, chapter.getChapterIndex());
         playerExtras.putString(PlayerActivity.EXTRA_CHAPTER_DURATION, chapter.getDuration());
-        playerExtras.putString(PlayerActivity.EXTRA_AUDIO_URL, chapter.getAudioUrl());
+        playerExtras.putString(PlayerActivity.EXTRA_AUDIO_URL, chapter.getPlaybackUrl());
+        playerExtras.putString(PlayerActivity.EXTRA_LOCAL_PATH, chapter.getLocalPath());
         playerExtras.putSerializable(PlayerActivity.EXTRA_CHAPTERS, chapters);
     }
 
