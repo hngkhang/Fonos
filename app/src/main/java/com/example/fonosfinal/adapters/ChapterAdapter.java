@@ -3,6 +3,7 @@ package com.example.fonosfinal.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,10 +17,20 @@ import java.util.List;
 
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
 
+    public interface OnChapterPlayClickListener {
+        void onChapterPlayClick(Chapter chapter);
+    }
+
     private final List<Chapter> chapters;
+    private final OnChapterPlayClickListener playClickListener;
 
     public ChapterAdapter(List<Chapter> chapters) {
+        this(chapters, null);
+    }
+
+    public ChapterAdapter(List<Chapter> chapters, OnChapterPlayClickListener playClickListener) {
         this.chapters = chapters == null ? new ArrayList<>() : chapters;
+        this.playClickListener = playClickListener;
     }
 
     @NonNull
@@ -36,6 +47,11 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         holder.titleTextView.setText(chapter.getTitle());
         holder.durationTextView.setText(chapter.getDuration());
         holder.statusTextView.setText(chapter.getStatus());
+        holder.playImageView.setOnClickListener(v -> {
+            if (playClickListener != null) {
+                playClickListener.onChapterPlayClick(chapter);
+            }
+        });
     }
 
     @Override
@@ -57,6 +73,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         private final TextView titleTextView;
         private final TextView durationTextView;
         private final TextView statusTextView;
+        private final ImageView playImageView;
 
         ChapterViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,6 +81,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
             titleTextView = itemView.findViewById(R.id.text_chapter_title);
             durationTextView = itemView.findViewById(R.id.text_chapter_duration);
             statusTextView = itemView.findViewById(R.id.text_chapter_status);
+            playImageView = itemView.findViewById(R.id.image_chapter_play);
         }
     }
 }

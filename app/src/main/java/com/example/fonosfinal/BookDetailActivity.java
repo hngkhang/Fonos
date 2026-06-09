@@ -46,6 +46,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private String bookId;
     private String description;
     private ChapterAdapter chapterAdapter;
+    private final ArrayList<Chapter> chapters = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +124,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private void setupChapters() {
         RecyclerView recyclerView = findViewById(R.id.recycler_chapters);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        chapterAdapter = new ChapterAdapter(new ArrayList<>());
+        chapterAdapter = new ChapterAdapter(new ArrayList<>(), this::openChapterPlayer);
         recyclerView.setAdapter(chapterAdapter);
         recyclerView.setNestedScrollingEnabled(false);
         loadChapters();
@@ -137,13 +138,15 @@ public class BookDetailActivity extends AppCompatActivity {
 
         new ChapterRepository().loadChapters(bookId, new ChapterRepository.ChaptersCallback() {
             @Override
-            public void onLoaded(List<Chapter> chapters) {
+            public void onLoaded(List<Chapter> loadedChapters) {
                 progress.setVisibility(View.GONE);
-                chapterAdapter.updateChapters(chapters);
+                chapters.clear();
+                chapters.addAll(loadedChapters);
+                chapterAdapter.updateChapters(loadedChapters);
                 emptyText.setText(bookId == null
                         ? "This book has no Firestore ID, so its chapters cannot be loaded."
                         : "No chapters found for this audiobook.");
-                emptyText.setVisibility(chapters.isEmpty() ? View.VISIBLE : View.GONE);
+                emptyText.setVisibility(loadedChapters.isEmpty() ? View.VISIBLE : View.GONE);
             }
 
             @Override
@@ -175,7 +178,24 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void openPlayer() {
+        for (Chapter chapter : chapters) {
+            if (chapter.getAudioUrl() != null && !chapter.getAudioUrl().trim().isEmpty()) {
+                openChapterPlayer(chapter);
+                return;
+            }
+        }
         Intent intent = createBookIntent(PlayerActivity.class);
+        intent.putExtra(PlayerActivity.EXTRA_CHAPTERS, chapters);
+        startActivity(intent);
+    }
+
+    private void openChapterPlayer(Chapter chapter) {
+        Intent intent = createBookIntent(PlayerActivity.class);
+        intent.putExtra(PlayerActivity.EXTRA_CHAPTER_TITLE, chapter.getTitle());
+        intent.putExtra(PlayerActivity.EXTRA_CHAPTER_INDEX, chapter.getChapterIndex());
+        intent.putExtra(PlayerActivity.EXTRA_CHAPTER_DURATION, chapter.getDuration());
+        intent.putExtra(PlayerActivity.EXTRA_AUDIO_URL, chapter.getAudioUrl());
+        intent.putExtra(PlayerActivity.EXTRA_CHAPTERS, chapters);
         startActivity(intent);
     }
 

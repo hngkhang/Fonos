@@ -1,6 +1,10 @@
 package com.example.fonosfinal.models;
 
-public class Chapter {
+import java.io.Serializable;
+
+public class Chapter implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String number;
     private final String title;

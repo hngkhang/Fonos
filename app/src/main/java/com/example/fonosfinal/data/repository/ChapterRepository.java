@@ -59,8 +59,28 @@ public class ChapterRepository {
                 formatDuration(durationMs),
                 isSample ? "free" : "locked",
                 chapterIndex,
-                getString(data.get("audioUrl"))
+                extractAudioUrl(data.get("audioUrl"))
         );
+    }
+
+    private String extractAudioUrl(Object value) {
+        if (value instanceof String) {
+            String url = ((String) value).trim();
+            return url.isEmpty() ? null : url;
+        }
+        if (value instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) value;
+            String[] preferredKeys = {"url", "downloadUrl", "audioUrl"};
+            for (String key : preferredKeys) {
+                String nestedUrl = extractAudioUrl(map.get(key));
+                if (nestedUrl != null) return nestedUrl;
+            }
+            for (Object nestedValue : map.values()) {
+                String nestedUrl = extractAudioUrl(nestedValue);
+                if (nestedUrl != null && nestedUrl.startsWith("http")) return nestedUrl;
+            }
+        }
+        return null;
     }
 
     private String getString(Object value) {
