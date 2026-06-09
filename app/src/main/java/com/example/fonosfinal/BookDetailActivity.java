@@ -3,12 +3,14 @@ package com.example.fonosfinal;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.fonosfinal.adapters.ChapterAdapter;
 import com.example.fonosfinal.adapters.ReviewAdapter;
 import com.example.fonosfinal.models.Book;
@@ -27,6 +29,7 @@ public class BookDetailActivity extends AppCompatActivity {
     public static final String EXTRA_RATING = "extra_rating";
     public static final String EXTRA_CATEGORY = "extra_category";
     public static final String EXTRA_COVER_TYPE = "extra_cover_type";
+    public static final String EXTRA_COVER_URL = "extra_cover_url";
 
     private String title;
     private String author;
@@ -35,6 +38,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private String rating;
     private String category;
     private int coverType;
+    private String coverUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class BookDetailActivity extends AppCompatActivity {
         rating = intent.getStringExtra(EXTRA_RATING);
         category = intent.getStringExtra(EXTRA_CATEGORY);
         coverType = intent.getIntExtra(EXTRA_COVER_TYPE, 1);
+        coverUrl = intent.getStringExtra(EXTRA_COVER_URL);
 
         if (title == null) {
             title = "Atomic Habits";
@@ -79,8 +84,17 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void bindHeader() {
-        View coverView = findViewById(R.id.view_detail_cover);
-        coverView.setBackgroundResource(getCoverDrawable(coverType));
+        ImageView coverView = findViewById(R.id.view_detail_cover);
+        int fallbackCover = getCoverDrawable(coverType);
+        coverView.setBackgroundResource(fallbackCover);
+        Glide.with(this)
+                .load(coverUrl)
+                .placeholder(fallbackCover)
+                .error(fallbackCover)
+                .centerCrop()
+                .into(coverView);
+        findViewById(R.id.image_detail_headphones).setVisibility(
+                coverUrl == null || coverUrl.trim().isEmpty() ? View.VISIBLE : View.GONE);
 
         ((TextView) findViewById(R.id.text_detail_title)).setText(title);
         ((TextView) findViewById(R.id.text_detail_author)).setText(author);
@@ -132,6 +146,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_RATING, rating);
         intent.putExtra(EXTRA_CATEGORY, category);
         intent.putExtra(EXTRA_COVER_TYPE, coverType);
+        intent.putExtra(EXTRA_COVER_URL, coverUrl);
         return intent;
     }
 
@@ -144,6 +159,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_RATING, book.getRating());
         intent.putExtra(EXTRA_CATEGORY, book.getCategory());
         intent.putExtra(EXTRA_COVER_TYPE, book.getCoverType());
+        intent.putExtra(EXTRA_COVER_URL, book.getCoverUrl());
         return intent;
     }
 

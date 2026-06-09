@@ -5,21 +5,43 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fonosfinal.BookDetailActivity;
 import com.example.fonosfinal.R;
 import com.example.fonosfinal.SearchResultActivity;
+import com.example.fonosfinal.adapters.CategoryBookAdapter;
+import com.example.fonosfinal.data.repository.BookRepository;
 import com.example.fonosfinal.models.Book;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class CategoryFragment extends Fragment {
 
+    private final List<Book> allBooks = new ArrayList<>();
+    private CategoryBookAdapter adapter;
+    private LinearLayout chipContainer;
+    private TextView sectionTitle;
+    private TextView emptyText;
+    private View progress;
+    private String selectedCategory = "All";
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_category, container, false);
     }
 
@@ -27,16 +49,132 @@ public class CategoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.layout_category_search_bar).setOnClickListener(v -> openSearchResults("business"));
-        setBookClick(view, R.id.card_category_money, new Book("The Psychology of Money", "Morgan Housel", "6h 10m", "4.8", 2, "Business", "Narrated by Chris Hill"));
-        setBookClick(view, R.id.card_category_start_why, new Book("Start With Why", "Simon Sinek", "7h 18m", "4.8", 3, "Business", "Narrated by Michael Turner"));
-        setBookClick(view, R.id.card_category_alchemist, new Book("The Alchemist", "Paulo Coelho", "4h 30m", "4.8", 4, "Fiction", "Narrated by Mark Bramhall"));
-        setBookClick(view, R.id.card_category_home, new Book("You'd Be Home", "Alex Michaelides", "6h 30m", "4.4", 2, "Fiction", "Narrated by Chris Hill"));
+        chipContainer = view.findViewById(R.id.layout_category_chips);
+        sectionTitle = view.findViewById(R.id.text_category_section);
+        emptyText = view.findViewById(R.id.text_category_empty);
+        progress = view.findViewById(R.id.progress_category);
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_category_books);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        adapter = new CategoryBookAdapter(book ->
+                startActivity(BookDetailActivity.createBookDetailIntent(requireContext(), book)));
+        recyclerView.setAdapter(adapter);
+
+        view.findViewById(R.id.layout_category_search_bar)
+                .setOnClickListener(v -> openSearchResults(""));
+
+        loadBooks();
     }
 
-    private void setBookClick(View parent, int viewId, Book book) {
-        parent.findViewById(viewId).setOnClickListener(v ->
-                startActivity(BookDetailActivity.createBookDetailIntent(requireContext(), book)));
+    private void loadBooks() {
+        new BookRepository(requireContext()).loadAllBooks(new BookRepository.BooksCallback() {
+            @Override
+            public void onLocalLoaded(List<Book> books) {
+                if (!books.isEmpty()) {
+                    showBooks(books);
+                }
+            }
+
+            @Override
+            public void onRemoteSynced(List<Book> books) {
+                showBooks(books);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                progress.setVisibility(View.GONE);
+                if (allBooks.isEmpty()) {
+                    emptyText.setVisibility(View.VISIBLE);
+                }
+                if (getContext() != null) {
+                    Toast.makeText(getContext(),
+                            "Cannot sync categories. Showing offline data.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void showBooks(List<Book> books) {
+        allBooks.clear();
+        allBooks.addAll(books);
+        progress.setVisibility(View.GONE);
+        buildCategoryChips();
+        filterBooks(selectedCategory);
+    }
+
+    private void buildCategoryChips() {
+        Set<String> categories = new LinkedHashSet<>();
+        categories.add("All");
+        for (Book book : allBooks) {
+            for (String category : splitCategories(book.getCategory())) {
+                categories.add(category);
+            }
+        }
+
+        chipContainer.removeAllViews();
+        boolean first = true;
+        for (String category : categories) {
+            int chipStyle = category.equals(selectedCategory)
+                    ? R.style.FonosChipSelected
+                    : R.style.FonosChipText;
+            TextView chip = new TextView(requireContext(), null, 0, chipStyle);
+            chip.setText(category);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (!first) {
+                params.setMarginStart(dpToPx(10));
+            }
+            chip.setLayoutParams(params);
+            chip.setOnClickListener(v -> {
+                selectedCategory = category;
+                buildCategoryChips();
+                filterBooks(category);
+            });
+            chipContainer.addView(chip);
+            first = false;
+        }
+    }
+
+    private void filterBooks(String category) {
+        List<Book> filtered = new ArrayList<>();
+        if ("All".equals(category)) {
+            filtered.addAll(allBooks);
+            sectionTitle.setText("All audiobooks");
+        } else {
+            String target = category.toLowerCase(Locale.ROOT);
+            for (Book book : allBooks) {
+                for (String value : splitCategories(book.getCategory())) {
+                    if (value.toLowerCase(Locale.ROOT).equals(target)) {
+                        filtered.add(book);
+                        break;
+                    }
+                }
+            }
+            sectionTitle.setText("Popular in " + category);
+        }
+
+        adapter.updateBooks(filtered);
+        emptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private List<String> splitCategories(String rawCategories) {
+        List<String> categories = new ArrayList<>();
+        if (rawCategories == null) return categories;
+
+        for (String value : rawCategories.split(",")) {
+            String category = value.trim();
+            if (!category.isEmpty() && !"Audiobook".equalsIgnoreCase(category)) {
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     private void openSearchResults(String query) {

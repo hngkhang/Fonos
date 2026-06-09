@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.google.firebase.Timestamp;
 public class BookRepository {
 
     private final BookLocalDao bookLocalDao;
@@ -28,6 +27,12 @@ public class BookRepository {
     public interface HomeBooksCallback {
         void onLocalLoaded(List<Book> trending, List<Book> recommended, List<Book> newReleases);
         void onRemoteSynced(List<Book> trending, List<Book> recommended, List<Book> newReleases);
+        void onError(Exception e);
+    }
+
+    public interface BooksCallback {
+        void onLocalLoaded(List<Book> books);
+        void onRemoteSynced(List<Book> books);
         void onError(Exception e);
     }
 
@@ -76,6 +81,32 @@ public class BookRepository {
                 );
     }
 
+    public void loadAllBooks(BooksCallback callback) {
+        executor.execute(() -> {
+            List<Book> books = bookLocalDao.getAllBooks();
+            mainHandler.post(() -> callback.onLocalLoaded(books));
+        });
+
+        firestore.collection("books")
+                .limit(250)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<Book> remoteBooks = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        remoteBooks.add(mapFirestoreBook(doc.getId(), doc.getData()));
+                    }
+
+                    executor.execute(() -> {
+                        bookLocalDao.upsertBooks(remoteBooks);
+                        List<Book> books = bookLocalDao.getAllBooks();
+                        mainHandler.post(() -> callback.onRemoteSynced(books));
+                    });
+                })
+                .addOnFailureListener(e ->
+                        mainHandler.post(() -> callback.onError(e))
+                );
+    }
+
     private Book mapFirestoreBook(String documentId, Map<String, Object> data) {
         Book book = new Book();
 
@@ -89,9 +120,9 @@ public class BookRepository {
         book.setAuthor(listOrString(data.get("authorNames")));
         book.setNarrator(listOrString(data.get("narratorNames")));
 
-        String genre = listOrString(data.get("genreNames"));
         String category = listOrString(data.get("categoryNames"));
-        book.setCategory(genre != null ? genre : category);
+        String genre = listOrString(data.get("genreNames"));
+        book.setCategory(joinValues(category, genre));
 
         Double rating = getDouble(data, "rating");
         book.setRating(rating == null ? "4.5" : String.valueOf(rating));
@@ -146,6 +177,12 @@ public class BookRepository {
         }
 
         return String.valueOf(value);
+    }
+
+    private String joinValues(String first, String second) {
+        if (first == null || first.trim().isEmpty()) return second;
+        if (second == null || second.trim().isEmpty() || first.equalsIgnoreCase(second)) return first;
+        return first + ", " + second;
     }
 
     private String timestampToText(Object value) {

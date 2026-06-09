@@ -3,6 +3,7 @@ package com.example.fonosfinal.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fonosfinal.R;
 import com.example.fonosfinal.models.Book;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -45,7 +47,14 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         holder.titleTextView.setText(book.getTitle());
         holder.authorTextView.setText(book.getAuthor());
         holder.metaTextView.setText(book.getDuration() + "  |  " + book.getRating());
-        holder.coverView.setBackgroundResource(getCoverDrawable(book.getCoverType()));
+        int fallbackCover = getCoverDrawable(book.getCoverType());
+        holder.coverView.setBackgroundResource(fallbackCover);
+        Glide.with(holder.coverView)
+                .load(book.getCoverUrl())
+                .placeholder(fallbackCover)
+                .error(fallbackCover)
+                .centerCrop()
+                .into(holder.coverView);
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onBookClick(book);
@@ -60,7 +69,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     static class BookViewHolder extends RecyclerView.ViewHolder {
 
-        private final View coverView;
+        private final ImageView coverView;
         private final TextView titleTextView;
         private final TextView authorTextView;
         private final TextView metaTextView;

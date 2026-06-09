@@ -14,11 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="154dp">
 
-        <View
+        <ImageView
             android:id="@+id/view_book_cover_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_book_placeholder" />
+            android:background="@drawable/bg_book_placeholder"
+            android:contentDescription="Book cover"
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/image_book_headphones"

@@ -71,6 +71,10 @@ public class BookLocalDao {
         return queryBooks("rating DESC, listen_count DESC", limit);
     }
 
+    public List<Book> getAllBooks() {
+        return queryBooks("title COLLATE NOCASE ASC", 0);
+    }
+
     private List<Book> queryBooks(String orderBy, int limit) {
         List<Book> books = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -83,7 +87,7 @@ public class BookLocalDao {
                 null,
                 null,
                 orderBy,
-                String.valueOf(limit)
+                limit > 0 ? String.valueOf(limit) : null
         );
 
         try {
@@ -106,9 +110,9 @@ public class BookLocalDao {
         book.setAuthor(getString(cursor, "author_names"));
         book.setNarrator(getString(cursor, "narrator_names"));
 
-        String genre = getString(cursor, "genre_names");
         String category = getString(cursor, "category_names");
-        book.setCategory(genre != null ? genre : category);
+        String genre = getString(cursor, "genre_names");
+        book.setCategory(category != null ? category : genre);
 
         book.setDescription(getString(cursor, "description"));
         book.setCoverUrl(getString(cursor, "cover_url"));
