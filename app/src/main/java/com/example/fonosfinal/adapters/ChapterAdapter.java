@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.fonosfinal.R;
 import com.example.fonosfinal.models.Chapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
@@ -18,7 +19,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     private final List<Chapter> chapters;
 
     public ChapterAdapter(List<Chapter> chapters) {
-        this.chapters = chapters;
+        this.chapters = chapters == null ? new ArrayList<>() : chapters;
     }
 
     @NonNull
@@ -40,6 +41,14 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     @Override
     public int getItemCount() {
         return chapters.size();
+    }
+
+    public void updateChapters(List<Chapter> newChapters) {
+        chapters.clear();
+        if (newChapters != null) {
+            chapters.addAll(newChapters);
+        }
+        notifyDataSetChanged();
     }
 
     static class ChapterViewHolder extends RecyclerView.ViewHolder {

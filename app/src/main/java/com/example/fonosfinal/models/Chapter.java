@@ -6,12 +6,17 @@ public class Chapter {
     private final String title;
     private final String duration;
     private final String status;
+    private final int chapterIndex;
+    private final String audioUrl;
 
-    public Chapter(String number, String title, String duration, String status) {
+    public Chapter(String number, String title, String duration, String status,
+                   int chapterIndex, String audioUrl) {
         this.number = number;
         this.title = title;
         this.duration = duration;
         this.status = status;
+        this.chapterIndex = chapterIndex;
+        this.audioUrl = audioUrl;
     }
 
     public String getNumber() {
@@ -28,5 +33,13 @@ public class Chapter {
 
     public String getStatus() {
         return status;
+    }
+
+    public int getChapterIndex() {
+        return chapterIndex;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
     }
 }

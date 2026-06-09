@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.fonosfinal.adapters.ChapterAdapter;
 import com.example.fonosfinal.adapters.ReviewAdapter;
+import com.example.fonosfinal.data.repository.ChapterRepository;
 import com.example.fonosfinal.models.Book;
 import com.example.fonosfinal.models.Chapter;
 import com.example.fonosfinal.models.Review;
@@ -30,6 +32,8 @@ public class BookDetailActivity extends AppCompatActivity {
     public static final String EXTRA_CATEGORY = "extra_category";
     public static final String EXTRA_COVER_TYPE = "extra_cover_type";
     public static final String EXTRA_COVER_URL = "extra_cover_url";
+    public static final String EXTRA_BOOK_ID = "extra_book_id";
+    public static final String EXTRA_DESCRIPTION = "extra_description";
 
     private String title;
     private String author;
@@ -39,6 +43,9 @@ public class BookDetailActivity extends AppCompatActivity {
     private String category;
     private int coverType;
     private String coverUrl;
+    private String bookId;
+    private String description;
+    private ChapterAdapter chapterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,8 @@ public class BookDetailActivity extends AppCompatActivity {
         category = intent.getStringExtra(EXTRA_CATEGORY);
         coverType = intent.getIntExtra(EXTRA_COVER_TYPE, 1);
         coverUrl = intent.getStringExtra(EXTRA_COVER_URL);
+        bookId = intent.getStringExtra(EXTRA_BOOK_ID);
+        description = intent.getStringExtra(EXTRA_DESCRIPTION);
 
         if (title == null) {
             title = "Atomic Habits";
@@ -103,7 +112,9 @@ public class BookDetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.text_detail_duration)).setText(duration);
         ((TextView) findViewById(R.id.text_detail_category)).setText(category);
         ((TextView) findViewById(R.id.text_detail_about)).setText(
-                title + " is a premium audiobook built for focused listening. Explore practical ideas, memorable stories, and clear chapters designed for short sessions or deep listening.");
+                description == null || description.trim().isEmpty()
+                        ? "No description available."
+                        : description.trim());
         ((TextView) findViewById(R.id.text_detail_metadata)).setText(
                 "Duration: " + duration + "\nLanguage: English\nCategory: " + category + "\nRelease year: 2024");
         ((TextView) findViewById(R.id.text_rating_summary)).setText(rating + " average rating from audiobook listeners");
@@ -112,8 +123,39 @@ public class BookDetailActivity extends AppCompatActivity {
     private void setupChapters() {
         RecyclerView recyclerView = findViewById(R.id.recycler_chapters);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ChapterAdapter(createChapters()));
+        chapterAdapter = new ChapterAdapter(new ArrayList<>());
+        recyclerView.setAdapter(chapterAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+        loadChapters();
+    }
+
+    private void loadChapters() {
+        View progress = findViewById(R.id.progress_chapters);
+        TextView emptyText = findViewById(R.id.text_chapters_empty);
+        progress.setVisibility(View.VISIBLE);
+        emptyText.setVisibility(View.GONE);
+
+        new ChapterRepository().loadChapters(bookId, new ChapterRepository.ChaptersCallback() {
+            @Override
+            public void onLoaded(List<Chapter> chapters) {
+                progress.setVisibility(View.GONE);
+                chapterAdapter.updateChapters(chapters);
+                emptyText.setText(bookId == null
+                        ? "This book has no Firestore ID, so its chapters cannot be loaded."
+                        : "No chapters found for this audiobook.");
+                emptyText.setVisibility(chapters.isEmpty() ? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                progress.setVisibility(View.GONE);
+                emptyText.setText("Unable to load chapters.");
+                emptyText.setVisibility(View.VISIBLE);
+                Toast.makeText(BookDetailActivity.this,
+                        "Cannot load chapters from Firestore.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupReviews() {
@@ -147,6 +189,8 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_CATEGORY, category);
         intent.putExtra(EXTRA_COVER_TYPE, coverType);
         intent.putExtra(EXTRA_COVER_URL, coverUrl);
+        intent.putExtra(EXTRA_BOOK_ID, bookId);
+        intent.putExtra(EXTRA_DESCRIPTION, description);
         return intent;
     }
 
@@ -160,17 +204,9 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_CATEGORY, book.getCategory());
         intent.putExtra(EXTRA_COVER_TYPE, book.getCoverType());
         intent.putExtra(EXTRA_COVER_URL, book.getCoverUrl());
+        intent.putExtra(EXTRA_BOOK_ID, book.getRemoteId());
+        intent.putExtra(EXTRA_DESCRIPTION, book.getDescription());
         return intent;
-    }
-
-    private List<Chapter> createChapters() {
-        List<Chapter> chapters = new ArrayList<>();
-        chapters.add(new Chapter("01", "Introduction", "15 min", "free"));
-        chapters.add(new Chapter("02", "Chapter 1: The Beginning", "28 min", "free"));
-        chapters.add(new Chapter("03", "Chapter 2: Building the Habit", "35 min", "locked"));
-        chapters.add(new Chapter("04", "Chapter 3: Small Changes", "42 min", "locked"));
-        chapters.add(new Chapter("05", "Chapter 4: Long-term Growth", "31 min", "locked"));
-        return chapters;
     }
 
     private List<Review> createReviews() {

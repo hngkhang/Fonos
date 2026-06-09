@@ -14,6 +14,9 @@ public class PlayerActivity extends AppCompatActivity {
     private String duration;
     private String rating;
     private String category;
+    private String bookId;
+    private String coverUrl;
+    private String description;
     private int coverType;
 
     @Override
@@ -34,6 +37,9 @@ public class PlayerActivity extends AppCompatActivity {
         duration = intent.getStringExtra(BookDetailActivity.EXTRA_DURATION);
         rating = intent.getStringExtra(BookDetailActivity.EXTRA_RATING);
         category = intent.getStringExtra(BookDetailActivity.EXTRA_CATEGORY);
+        bookId = intent.getStringExtra(BookDetailActivity.EXTRA_BOOK_ID);
+        coverUrl = intent.getStringExtra(BookDetailActivity.EXTRA_COVER_URL);
+        description = intent.getStringExtra(BookDetailActivity.EXTRA_DESCRIPTION);
         coverType = intent.getIntExtra(BookDetailActivity.EXTRA_COVER_TYPE, 1);
 
         if (title == null) {
@@ -72,6 +78,9 @@ public class PlayerActivity extends AppCompatActivity {
             intent.putExtra(BookDetailActivity.EXTRA_RATING, rating);
             intent.putExtra(BookDetailActivity.EXTRA_CATEGORY, category);
             intent.putExtra(BookDetailActivity.EXTRA_COVER_TYPE, coverType);
+            intent.putExtra(BookDetailActivity.EXTRA_BOOK_ID, bookId);
+            intent.putExtra(BookDetailActivity.EXTRA_COVER_URL, coverUrl);
+            intent.putExtra(BookDetailActivity.EXTRA_DESCRIPTION, description);
             startActivity(intent);
             finish();
         });

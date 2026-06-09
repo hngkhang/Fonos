@@ -48,6 +48,9 @@ public class LibraryFragment extends Fragment {
         intent.putExtra(BookDetailActivity.EXTRA_RATING, book.getRating());
         intent.putExtra(BookDetailActivity.EXTRA_CATEGORY, book.getCategory());
         intent.putExtra(BookDetailActivity.EXTRA_COVER_TYPE, book.getCoverType());
+        intent.putExtra(BookDetailActivity.EXTRA_BOOK_ID, book.getRemoteId());
+        intent.putExtra(BookDetailActivity.EXTRA_COVER_URL, book.getCoverUrl());
+        intent.putExtra(BookDetailActivity.EXTRA_DESCRIPTION, book.getDescription());
         startActivity(intent);
     }
 }
