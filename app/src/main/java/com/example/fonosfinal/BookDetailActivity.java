@@ -74,22 +74,22 @@ public class BookDetailActivity extends AppCompatActivity {
         description = intent.getStringExtra(EXTRA_DESCRIPTION);
 
         if (title == null) {
-            title = "Atomic Habits";
+            title = "Untitled audiobook";
         }
         if (author == null) {
-            author = "James Clear";
+            author = "Unknown author";
         }
         if (narrator == null) {
-            narrator = getNarratorForTitle(title);
+            narrator = "Unknown narrator";
         }
         if (duration == null) {
-            duration = "5h 20m";
+            duration = "Unknown duration";
         }
         if (rating == null) {
-            rating = "4.9";
+            rating = "No rating";
         }
         if (category == null) {
-            category = "Self-help";
+            category = "Audiobook";
         }
     }
 
@@ -109,7 +109,7 @@ public class BookDetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.text_detail_title)).setText(title);
         ((TextView) findViewById(R.id.text_detail_author)).setText(author);
         ((TextView) findViewById(R.id.text_detail_narrator)).setText(narrator);
-        ((TextView) findViewById(R.id.text_detail_rating)).setText("★ " + rating);
+        ((TextView) findViewById(R.id.text_detail_rating)).setText("Rating: " + rating);
         ((TextView) findViewById(R.id.text_detail_duration)).setText(duration);
         ((TextView) findViewById(R.id.text_detail_category)).setText(category);
         ((TextView) findViewById(R.id.text_detail_about)).setText(
@@ -234,21 +234,6 @@ public class BookDetailActivity extends AppCompatActivity {
         reviews.add(new Review("Minh Anh", "★★★★★", "Clear narration and short chapters make it easy to continue during commutes.", "2 days ago"));
         reviews.add(new Review("David Nguyen", "★★★★☆", "A polished audiobook experience with practical ideas and strong pacing.", "1 week ago"));
         return reviews;
-    }
-
-    private String getNarratorForTitle(String bookTitle) {
-        if ("Atomic Habits".equals(bookTitle)) {
-            return "Narrated by John Smith";
-        } else if ("Deep Work".equals(bookTitle)) {
-            return "Narrated by Alan Reed";
-        } else if ("The Psychology of Money".equals(bookTitle)) {
-            return "Narrated by Chris Hill";
-        } else if ("Ikigai".equals(bookTitle)) {
-            return "Narrated by Daniel Lee";
-        } else if ("The Alchemist".equals(bookTitle)) {
-            return "Narrated by Mark Bramhall";
-        }
-        return "Narrated by Fonos Studio";
     }
 
     private int getCoverDrawable(int type) {

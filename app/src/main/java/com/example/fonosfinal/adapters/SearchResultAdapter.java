@@ -3,27 +3,30 @@ package com.example.fonosfinal.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.fonosfinal.R;
-import com.example.fonosfinal.models.SearchResult;
+import com.example.fonosfinal.models.Book;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.SearchResultViewHolder> {
 
     public interface OnSearchResultClickListener {
-        void onSearchResultClick(SearchResult result);
+        void onSearchResultClick(Book book);
     }
 
-    private final List<SearchResult> results;
+    private final List<Book> books;
     private final OnSearchResultClickListener listener;
 
-    public SearchResultAdapter(List<SearchResult> results, OnSearchResultClickListener listener) {
-        this.results = results;
+    public SearchResultAdapter(List<Book> books, OnSearchResultClickListener listener) {
+        this.books = books == null ? new ArrayList<>() : books;
         this.listener = listener;
     }
 
@@ -36,27 +39,42 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     @Override
     public void onBindViewHolder(@NonNull SearchResultViewHolder holder, int position) {
-        SearchResult result = results.get(position);
-        holder.coverView.setBackgroundResource(getCoverDrawable(result.getCoverType()));
-        holder.titleTextView.setText(result.getTitle());
-        holder.authorTextView.setText(result.getAuthor());
-        holder.narratorTextView.setText(result.getNarrator());
-        holder.metaTextView.setText(result.getDuration() + "  |  " + result.getRating() + "  |  " + result.getCategory());
+        Book book = books.get(position);
+        int fallbackCover = getCoverDrawable(book.getCoverType());
+        holder.coverView.setBackgroundResource(fallbackCover);
+        Glide.with(holder.coverView)
+                .load(book.getCoverUrl())
+                .placeholder(fallbackCover)
+                .error(fallbackCover)
+                .centerCrop()
+                .into(holder.coverView);
+        holder.titleTextView.setText(book.getTitle());
+        holder.authorTextView.setText(book.getAuthor());
+        holder.narratorTextView.setText(book.getNarrator());
+        holder.metaTextView.setText(book.getDuration() + "  |  " + book.getRating() + "  |  " + book.getCategory());
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onSearchResultClick(result);
+                listener.onSearchResultClick(book);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return results.size();
+        return books.size();
+    }
+
+    public void updateData(List<Book> newBooks) {
+        books.clear();
+        if (newBooks != null) {
+            books.addAll(newBooks);
+        }
+        notifyDataSetChanged();
     }
 
     static class SearchResultViewHolder extends RecyclerView.ViewHolder {
 
-        private final View coverView;
+        private final ImageView coverView;
         private final TextView titleTextView;
         private final TextView authorTextView;
         private final TextView narratorTextView;

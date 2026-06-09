@@ -31,6 +31,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/image_search_submit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="14dp"
@@ -38,13 +39,20 @@
                 android:src="@drawable/ic_search"
                 android:tint="@color/text_muted" />
 
-            <TextView
+            <EditText
+                android:id="@+id/edit_search_query"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:text="Title, author, narrator..."
+                android:background="@android:color/transparent"
+                android:hint="Search by book title"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/text_muted"
+                android:textColorHint="@color/text_muted"
                 android:textSize="14sp" />
 
             <TextView

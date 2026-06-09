@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.fonosfinal.models.Book;
+import com.example.fonosfinal.util.SearchTextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class BookLocalDao {
                 values.put("remote_id", book.getRemoteId());
                 values.put("slug", book.getSlug());
                 values.put("title", book.getTitle());
+                values.put("search_title", getSearchTitle(book));
                 values.put("author_names", book.getAuthor());
                 values.put("narrator_names", book.getNarrator());
                 values.put("category_names", book.getCategory());
@@ -75,6 +77,47 @@ public class BookLocalDao {
         return queryBooks("title COLLATE NOCASE ASC", 0);
     }
 
+    public List<Book> searchBooksByTitle(String query, int limit) {
+        String normalizedQuery = SearchTextUtils.normalizeSearchText(query);
+        List<Book> books = new ArrayList<>();
+        if (normalizedQuery.isEmpty()) {
+            return books;
+        }
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                LocalDatabaseHelper.TABLE_LOCAL_BOOKS,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "title COLLATE NOCASE ASC",
+                null
+        );
+
+        try {
+            while (cursor.moveToNext()) {
+                Book book = cursorToBook(cursor);
+                String normalizedTitle = book.getSearchTitle();
+                if (normalizedTitle == null || normalizedTitle.trim().isEmpty()) {
+                    normalizedTitle = SearchTextUtils.normalizeSearchText(book.getTitle());
+                }
+
+                if (normalizedTitle.contains(normalizedQuery)) {
+                    books.add(book);
+                    if (limit > 0 && books.size() >= limit) {
+                        break;
+                    }
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return books;
+    }
+
     private List<Book> queryBooks(String orderBy, int limit) {
         List<Book> books = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -107,6 +150,7 @@ public class BookLocalDao {
         book.setRemoteId(getString(cursor, "remote_id"));
         book.setSlug(getString(cursor, "slug"));
         book.setTitle(getString(cursor, "title"));
+        book.setSearchTitle(getString(cursor, "search_title"));
         book.setAuthor(getString(cursor, "author_names"));
         book.setNarrator(getString(cursor, "narrator_names"));
 
@@ -155,5 +199,13 @@ public class BookLocalDao {
 
     private String now() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
+    }
+
+    private String getSearchTitle(Book book) {
+        String searchTitle = book.getSearchTitle();
+        if (searchTitle != null && !searchTitle.trim().isEmpty()) {
+            return SearchTextUtils.normalizeSearchText(searchTitle);
+        }
+        return SearchTextUtils.normalizeSearchText(book.getTitle());
     }
 }

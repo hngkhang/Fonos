@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "fonoslocal.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_LOCAL_BOOKS = "local_books";
 
@@ -23,6 +23,7 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
                         "remote_id TEXT UNIQUE NOT NULL, " +
                         "slug TEXT, " +
                         "title TEXT NOT NULL, " +
+                        "search_title TEXT, " +
                         "author_names TEXT, " +
                         "narrator_names TEXT, " +
                         "category_names TEXT, " +
@@ -41,11 +42,17 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_books_listen_count ON local_books(listen_count)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_books_created_at ON local_books(created_at)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_books_title ON local_books(title)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_books_search_title ON local_books(search_title)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS local_books");
-        onCreate(db);
+        if (oldVersion < 2) {
+            try {
+                db.execSQL("ALTER TABLE local_books ADD COLUMN search_title TEXT");
+            } catch (Exception ignored) {
+            }
+            db.execSQL("CREATE INDEX IF NOT EXISTS idx_books_search_title ON local_books(search_title)");
+        }
     }
 }

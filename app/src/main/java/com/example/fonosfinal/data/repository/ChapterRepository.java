@@ -25,6 +25,29 @@ public class ChapterRepository {
             return;
         }
 
+        firestore.collection("books")
+                .document(bookId)
+                .collection("chapters")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<Chapter> chapters = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : snapshot) {
+                        Chapter chapter = mapChapter(document.getData());
+                        if (chapter != null) {
+                            chapters.add(chapter);
+                        }
+                    }
+                    chapters.sort(Comparator.comparingInt(Chapter::getChapterIndex));
+                    if (chapters.isEmpty()) {
+                        loadTopLevelChapters(bookId, callback);
+                    } else {
+                        callback.onLoaded(chapters);
+                    }
+                })
+                .addOnFailureListener(e -> loadTopLevelChapters(bookId, callback));
+    }
+
+    private void loadTopLevelChapters(String bookId, ChaptersCallback callback) {
         firestore.collection("chapters")
                 .whereEqualTo("bookId", bookId)
                 .get()

@@ -14,11 +14,13 @@
         android:layout_width="78dp"
         android:layout_height="106dp">
 
-        <View
+        <ImageView
             android:id="@+id/view_search_result_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_cover_gradient_1" />
+            android:background="@drawable/bg_cover_gradient_1"
+            android:contentDescription="Book cover"
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:layout_width="32dp"

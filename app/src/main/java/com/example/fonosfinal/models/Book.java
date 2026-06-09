@@ -11,6 +11,7 @@ public class Book {
     private int coverType;
     private String category;
     private String narrator;
+    private String searchTitle;
 
     private String description;
     private String coverUrl;
@@ -26,7 +27,7 @@ public class Book {
     }
 
     public Book(String title, String author, String duration, String rating, int coverType, String category) {
-        this(title, author, duration, rating, coverType, category, "Narrated by Fonos Studio");
+        this(title, author, duration, rating, coverType, category, "Unknown narrator");
     }
 
     public Book(String title, String author, String duration, String rating, int coverType, String category, String narrator) {
@@ -56,7 +57,7 @@ public class Book {
     }
 
     public String getTitle() {
-        return title;
+        return title == null || title.trim().isEmpty() ? "Untitled audiobook" : title;
     }
 
     public void setTitle(String title) {
@@ -80,7 +81,7 @@ public class Book {
     }
 
     public String getRating() {
-        return rating == null ? "4.5" : rating;
+        return rating == null || rating.trim().isEmpty() ? "No rating" : rating;
     }
 
     public void setRating(String rating) {
@@ -104,11 +105,19 @@ public class Book {
     }
 
     public String getNarrator() {
-        return narrator == null ? "Narrated by Fonos Studio" : narrator;
+        return narrator == null || narrator.trim().isEmpty() ? "Unknown narrator" : narrator;
     }
 
     public void setNarrator(String narrator) {
         this.narrator = narrator;
+    }
+
+    public String getSearchTitle() {
+        return searchTitle;
+    }
+
+    public void setSearchTitle(String searchTitle) {
+        this.searchTitle = searchTitle;
     }
 
     public String getDescription() {
